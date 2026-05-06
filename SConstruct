@@ -34,10 +34,17 @@ glideview_release = f"Release/glideview_{env["GIT_VERSION"]}.zip"
 def glideview_cake_run(target, source, env):
     dotnet_run("./CakeBuild/CakeBuild.csproj", str(env["VINTAGE_STORY"]), str(env["DOTNET_VERS"]))
 
-glideview_compile = env.Command(glideview_release, glideview_sources, glideview_cake_run)
+env.Command(glideview_release, glideview_sources, glideview_cake_run)
 env.Clean(glideview_release, ['GlideView/bin', 'GlideView/obj', 'Release'])
 env.Default(glideview_release)
-#smartcursor_install_release = env.InstallAs(target=f"{str(env["VINTAGE_STORY_DATA"])}/Mods/smartcursor.zip", source=smartcursor_release)
-#env.Alias("install", smartcursor_install_release)
-#env.Depends(glideview_release, [glideview_mod_info, glideview_compile])
-env.Default(glideview_compile)
+env.Depends(glideview_release, [glideview_mod_info, glideview_cake])
+env.Default(glideview_release)
+
+def run_program(target, source, env):
+    vs_run(env)
+
+glideview_install_release = env.InstallAs(target=f"{str(env["VINTAGE_STORY_DATA"])}/Mods/glideview.zip", source=glideview_release)
+env.Alias("install", glideview_install_release)
+
+run = env.Command("run", [], run_program)
+env.AlwaysBuild(run)
