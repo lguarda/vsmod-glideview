@@ -11,6 +11,8 @@ namespace GlideView {
 
 public class GlideViewModSystem : ModSystem {
 
+    ICoreClientAPI _capi;
+
   public bool shouldDoThirdPerson() {
     var entity =
         _capi.World.Player
