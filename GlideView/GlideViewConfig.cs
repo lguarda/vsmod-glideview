@@ -31,6 +31,6 @@ public class GlideViewConfig : BaseConfig {
     public string glide_view = "third";
     public string other_mount_view = "third";
     public string sit_view = "overhead";
-    public float sit_pitch = 3.5f;
+    public float sit_pitch = -20f;
 }
 }

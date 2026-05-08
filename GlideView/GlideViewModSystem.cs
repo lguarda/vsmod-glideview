@@ -22,16 +22,26 @@ public class GlideViewModSystem : ModSystem {
     public EnumCameraMode other_mount_view;
     public EnumCameraMode sit_view;
     public EnumCameraMode glide_view;
+    public float sit_pitch;
+    public EnumCameraMode last_sit_view;
+    public bool sit_on = false;
+
+    float degreeToVSPitch(float degrees) { return GameMath.PI - (degrees * GameMath.DEG2RAD); }
 
     public EnumCameraMode detectCameraMode() {
         var entity = _capi.World.Player.Entity;
 
         if (entity.Controls.FloorSitting) {
-            EntityPos pos = entity.Pos;
-            if (pos.Pitch < config.sit_pitch) {
-                return sit_view;
+            if (sit_on) {
+                return last_sit_view;
             }
+            sit_on = true;
+            EntityPos pos = entity.Pos;
+
+            last_sit_view = pos.Pitch < sit_pitch ? sit_view : default_view;
+            return last_sit_view;
         }
+        sit_on = false;
 
         if (entity.MountedOn != null) {
 
@@ -44,7 +54,6 @@ public class GlideViewModSystem : ModSystem {
             _capi.ShowChatMessage("MountedOn type: " + seat?.GetType()?.FullName);
             _capi.ShowChatMessage("MountSupplier type: " + seat?.MountSupplier?.GetType()?.FullName);
 #endif
-
             if (path != null && path.Contains("boat")) {
                 return boat_view;
             } else if (path != null && path.Contains("elk")) {
@@ -102,6 +111,7 @@ public class GlideViewModSystem : ModSystem {
         sit_view = ParseCameraMode(config.sit_view);
         glide_view = ParseCameraMode(config.glide_view);
         other_mount_view = ParseCameraMode(config.other_mount_view);
+        sit_pitch = degreeToVSPitch(config.sit_pitch);
         // BaseConfig.Save<GlideViewConfig>(api, CONFIG_PATH, config);
         _capi = api;
 
